@@ -195,23 +195,20 @@ class NeuralStyleTransfer:
         print(f'Total time: {time.time() - start_time:.2f}s')
         return self.deprocess_image(self.generated_image.numpy())
 
-def load_and_prepare_images(content_path, style_path):
-    """Helper function to load and display content and style images."""
-    # Display content image
-    content_img = load_img(content_path, target_size=(400, 600))
-    plt.figure(figsize=(10, 10))
-    plt.title('Content Image')
-    plt.imshow(content_img)
-    plt.axis('off')
-    plt.show()
+def save_input_images(content_path, style_path):
+    """Helper function to save content and style images."""
+    # Create output directory if it doesn't exist
+    os.makedirs('output', exist_ok=True)
     
-    # Display style image
+    # Save content image
+    content_img = load_img(content_path, target_size=(400, 600))
+    content_img.save('output/content_image.jpg')
+    print(f"Saved content image to: output/content_image.jpg")
+    
+    # Save style image
     style_img = load_img(style_path, target_size=(400, 600))
-    plt.figure(figsize=(10, 10))
-    plt.title('Style Image')
-    plt.imshow(style_img)
-    plt.axis('off')
-    plt.show()
+    style_img.save('output/style_image.jpg')
+    print(f"Saved style image to: output/style_image.jpg")
 
 def get_image_path(prompt, default_filename):
     """Helper function to get image path with error handling."""
@@ -235,11 +232,11 @@ def main():
     # Create output directory
     os.makedirs('output', exist_ok=True)
     
-    # Load and display the input images
+    # Save input images
     try:
-        load_and_prepare_images(content_path, style_path)
+        save_input_images(content_path, style_path)
     except Exception as e:
-        print(f"Error loading images: {e}")
+        print(f"Error processing images: {e}")
         print("Please make sure the image files are valid and accessible.")
         return
     
@@ -248,12 +245,12 @@ def main():
     print("Starting style transfer...")
     result = nst.generate(epochs=5, steps_per_epoch=100, learning_rate=8.0)
     
-    # Display the final result
-    plt.figure(figsize=(10, 10))
-    plt.title('Stylized Image')
-    plt.imshow(result)
-    plt.axis('off')
-    plt.show()
+    # Save the final result
+    output_path = 'output/stylized_result.jpg'
+    plt.imsave(output_path, result)
+    print(f"\nStyle transfer complete!")
+    print(f"Final result saved to: {output_path}")
+    print("\nYou can find all output files in the 'output' directory.")
 
 if __name__ == "__main__":
     main()
